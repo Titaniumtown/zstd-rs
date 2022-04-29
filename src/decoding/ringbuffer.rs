@@ -1,4 +1,7 @@
-use std::{alloc::Layout, ptr::slice_from_raw_parts};
+use std::{
+    alloc::{handle_alloc_error, Layout},
+    ptr::slice_from_raw_parts,
+};
 
 pub struct RingBuffer {
     buf: *mut u8,
@@ -59,8 +62,8 @@ impl RingBuffer {
 
         let new_buf = std::alloc::alloc(new_layout);
 
-        if new_buf == std::ptr::null_mut() {
-            panic!("THIS DID NOT WORK!");
+        if new_buf.is_null() {
+            handle_alloc_error(new_layout);
         }
 
         if self.cap > 0 {
@@ -185,7 +188,7 @@ impl RingBuffer {
     #[allow(dead_code)]
     pub fn extend_from_within(&mut self, start: usize, len: usize) {
         if start + len > self.len() {
-            panic!("This is illegal!");
+            ring_buffer_out_of_bounds();
         }
 
         self.reserve(len);
@@ -197,7 +200,7 @@ impl RingBuffer {
     /// And more then len reserved space
     #[warn(unsafe_op_in_unsafe_fn)]
     pub unsafe fn extend_from_within_unchecked(&mut self, start: usize, len: usize) {
-        debug_assert!(self.buf != std::ptr::null_mut());
+        debug_assert!(!self.buf.is_null());
 
         if self.head < self.tail {
             // continous data slice  |____HDDDDDDDT_____|
@@ -311,6 +314,13 @@ impl Drop for RingBuffer {
             std::alloc::dealloc(self.buf, current_layout);
         }
     }
+}
+
+#[track_caller]
+#[inline(never)]
+#[cold]
+fn ring_buffer_out_of_bounds() {
+    panic!("This is illegal!");
 }
 
 #[allow(dead_code)]
