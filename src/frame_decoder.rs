@@ -261,7 +261,7 @@ impl FrameDecoder {
             Some(s) => s,
         };
 
-        match state.frame.header.dictiornary_id() {
+        match state.frame.header.dictionary_id() {
             Ok(Some(id)) => {
                 match state.using_dict {
                     Some(using_id) => {
@@ -403,7 +403,7 @@ impl FrameDecoder {
             Some(s) => s,
         };
         if finished {
-            state.decoder_scratch.buffer.can_drain()
+            state.decoder_scratch.buffer.len()
         } else {
             state
                 .decoder_scratch
@@ -468,7 +468,7 @@ impl FrameDecoder {
                     return Ok((4, 0));
                 }
 
-                match state.frame.header.dictiornary_id() {
+                match state.frame.header.dictionary_id() {
                     Ok(Some(id)) => {
                         match state.using_dict {
                             Some(using_id) => {

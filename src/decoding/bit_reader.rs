@@ -4,19 +4,19 @@ pub struct BitReader<'s> {
 }
 
 impl<'s> BitReader<'s> {
-    pub fn new(source: &'s [u8]) -> BitReader<'_> {
+    pub const fn new(source: &'s [u8]) -> BitReader<'_> {
         BitReader { idx: 0, source }
     }
 
-    pub fn bits_left(&self) -> usize {
+    pub const fn bits_left(&self) -> usize {
         self.source.len() * 8 - self.idx
     }
 
-    pub fn bits_read(&self) -> usize {
+    pub const fn bits_read(&self) -> usize {
         self.idx
     }
 
-    pub fn return_bits(&mut self, n: usize) {
+    pub const fn return_bits(&mut self, n: usize) {
         if n > self.idx {
             panic!("Cant return this many bits");
         }
@@ -86,7 +86,7 @@ impl<'s> BitReader<'s> {
         Ok(value)
     }
 
-    pub fn reset(&mut self, new_source: &'s [u8]) {
+    pub const fn reset(&mut self, new_source: &'s [u8]) {
         self.idx = 0;
         self.source = new_source;
     }

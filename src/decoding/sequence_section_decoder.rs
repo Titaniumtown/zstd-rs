@@ -222,7 +222,7 @@ fn decode_sequences_without_rle(
     }
 }
 
-fn lookup_ll_code(code: u8) -> (u32, u8) {
+const fn lookup_ll_code(code: u8) -> (u32, u8) {
     match code {
         0..=15 => (u32::from(code), 0),
         16 => (16, 1),
@@ -249,7 +249,7 @@ fn lookup_ll_code(code: u8) -> (u32, u8) {
     }
 }
 
-fn lookup_ml_code(code: u8) -> (u32, u8) {
+const fn lookup_ml_code(code: u8) -> (u32, u8) {
     match code {
         0..=31 => (u32::from(code) + 3, 0),
         32 => (35, 1),

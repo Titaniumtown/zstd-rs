@@ -19,23 +19,23 @@ pub struct FrameHeader {
 pub struct FrameDescriptor(u8);
 
 impl FrameDescriptor {
-    pub fn frame_content_size_flag(&self) -> u8 {
+    pub const fn frame_content_size_flag(&self) -> u8 {
         self.0 >> 6
     }
 
-    pub fn reserved_flag(&self) -> bool {
+    pub const fn reserved_flag(&self) -> bool {
         ((self.0 >> 3) & 0x1) == 1
     }
 
-    pub fn single_segment_flag(&self) -> bool {
+    pub const fn single_segment_flag(&self) -> bool {
         ((self.0 >> 5) & 0x1) == 1
     }
 
-    pub fn content_checksum_flag(&self) -> bool {
+    pub const fn content_checksum_flag(&self) -> bool {
         ((self.0 >> 2) & 0x1) == 1
     }
 
-    pub fn dict_id_flag(&self) -> u8 {
+    pub const fn dict_id_flag(&self) -> u8 {
         self.0 & 0x3
     }
 
@@ -104,7 +104,7 @@ impl FrameHeader {
         }
     }
 
-    pub fn dictiornary_id(&self) -> Result<Option<u32>, String> {
+    pub fn dictionary_id(&self) -> Result<Option<u32>, String> {
         if self.descriptor.dict_id_flag() == 0 {
             Ok(None)
         } else {
@@ -208,9 +208,9 @@ impl Frame {
                 self.magic_num, MAGIC_NUM
             ))
         } else if self.header.descriptor.reserved_flag() {
-            Err("Reserved Flag set. Must be zero".to_string())
+            Err("Reserved Flag set. Must be zero".to_owned())
         } else {
-            match self.header.dictiornary_id() {
+            match self.header.dictionary_id() {
                 Ok(_) => match self.header.window_size() {
                     Ok(_) => {
                         if self.header.descriptor.single_segment_flag() {

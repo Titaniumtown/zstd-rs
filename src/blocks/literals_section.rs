@@ -25,14 +25,14 @@ impl std::fmt::Display for LiteralsSectionType {
     }
 }
 
-impl Default for LiteralsSection {
+impl const Default for LiteralsSection {
     fn default() -> Self {
         Self::new()
     }
 }
 
 impl LiteralsSection {
-    pub fn new() -> LiteralsSection {
+    pub const fn new() -> LiteralsSection {
         LiteralsSection {
             regenerated_size: 0,
             compressed_size: None,

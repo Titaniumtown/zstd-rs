@@ -58,7 +58,7 @@ pub fn execute_sequences(scratch: &mut DecoderScratch) -> Result<(), String> {
     Ok(())
 }
 
-fn do_offset_history(offset_value: u32, lit_len: u32, scratch: &mut [u32; 3]) -> u32 {
+const fn do_offset_history(offset_value: u32, lit_len: u32, scratch: &mut [u32; 3]) -> u32 {
     let actual_offset = if lit_len > 0 {
         match offset_value {
             1..=3 => scratch[offset_value as usize - 1],

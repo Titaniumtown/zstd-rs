@@ -21,7 +21,7 @@ enum DecoderState {
     Failed, //TODO put "self.internal_state = DecoderState::Failed;" everywhere a unresolvable error occurs
 }
 
-pub fn new() -> BlockDecoder {
+pub const fn new() -> BlockDecoder {
     BlockDecoder {
         internal_state: DecoderState::ReadyToDecodeNextHeader,
         header_buffer: [0u8; 3],
@@ -39,8 +39,8 @@ impl BlockDecoder {
     ) -> Result<u64, String> {
         match self.internal_state {
             DecoderState::ReadyToDecodeNextBody => {/* Happy :) */},
-            DecoderState::Failed => return Err("Cant decode next block if failed along the way. Results will be nonsense".to_string()),
-            DecoderState::ReadyToDecodeNextHeader => return Err("Cant decode next block body, while expecting to decode the header of the previous block. Results will be nonsense".to_string()),
+            DecoderState::Failed => return Err("Cant decode next block if failed along the way. Results will be nonsense".to_owned()),
+            DecoderState::ReadyToDecodeNextHeader => return Err("Cant decode next block body, while expecting to decode the header of the previous block. Results will be nonsense".to_owned()),
         }
 
         match header.block_type {
@@ -54,7 +54,7 @@ impl BlockDecoder {
                     Ok(_) => {
                         self.internal_state = DecoderState::ReadyToDecodeNextHeader;
                     }
-                    Err(_) => return Err("Error while reading the one RLE byte".to_string()),
+                    Err(_) => return Err("Error while reading the one RLE byte".to_owned()),
                 }
 
                 for i in 1..BATCH_SIZE {
@@ -81,7 +81,7 @@ impl BlockDecoder {
                             workspace.buffer.push(&buf[..]);
                         }
                         Err(_) => {
-                            return Err("Error while reading bytes of the raw block".to_string())
+                            return Err("Error while reading bytes of the raw block".to_owned())
                         }
                     }
                 }
@@ -92,7 +92,7 @@ impl BlockDecoder {
                         workspace.buffer.push(smaller);
                     }
                     Err(_) => {
-                       return Err("Error while reading bytes of the raw block".to_string())
+                       return Err("Error while reading bytes of the raw block".to_owned())
                     }
                 }
 
@@ -137,7 +137,7 @@ impl BlockDecoder {
         let raw = &raw[bytes_in_literals_header as usize..];
         if crate::VERBOSE {
             println!(
-                "Found {} literalssection with regenerated size: {}, and compressed size: {:?}",
+                "Found {} LiteralSection with regenerated size: {}, and compressed size: {:?}",
                 section.ls_type, section.regenerated_size, section.compressed_size
             );
         }
@@ -230,14 +230,14 @@ impl BlockDecoder {
 
         match r.read_exact(&mut self.header_buffer[0..3]) {
             Ok(_) => {}
-            Err(_) => return Err("Error while reading the block header".to_string()),
+            Err(_) => return Err("Error while reading the block header".to_owned()),
         }
 
         let btype = match self.block_type() {
             Ok(t) => match t {
                 BlockType::Reserved => return Err(
                     "Reserved block occurred. This is considered corruption by the documentation"
-                        .to_string(),
+                        .to_owned(),
                 ),
                 _ => t,
             },
@@ -275,13 +275,13 @@ impl BlockDecoder {
         ))
     }
 
-    fn reset_buffer(&mut self) {
+    const fn reset_buffer(&mut self) {
         self.header_buffer[0] = 0;
         self.header_buffer[1] = 0;
         self.header_buffer[2] = 0;
     }
 
-    fn is_last(&self) -> bool {
+    const fn is_last(&self) -> bool {
         self.header_buffer[0] & 0x1 == 1
     }
 
@@ -311,7 +311,7 @@ impl BlockDecoder {
         }
     }
 
-    fn block_content_size_unchecked(&self) -> u32 {
+    const fn block_content_size_unchecked(&self) -> u32 {
         u32::from(self.header_buffer[0] >> 3) //push out type and last_block flags. Retain 5 bit
             | (u32::from(self.header_buffer[1]) << 5)
             | (u32::from(self.header_buffer[2]) << 13)

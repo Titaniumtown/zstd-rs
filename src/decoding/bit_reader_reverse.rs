@@ -10,11 +10,11 @@ pub struct BitReaderReversed<'s> {
 }
 
 impl<'s> BitReaderReversed<'s> {
-    pub fn bits_remaining(&self) -> isize {
+    pub const fn bits_remaining(&self) -> isize {
         self.idx + self.bits_in_container as isize
     }
 
-    pub fn new(source: &'s [u8]) -> BitReaderReversed<'_> {
+    pub const fn new(source: &'s [u8]) -> BitReaderReversed<'_> {
         BitReaderReversed {
             idx: source.len() as isize * 8,
             source,
@@ -67,7 +67,7 @@ impl<'s> BitReaderReversed<'s> {
         }
     }
 
-    fn byte_idx(&self) -> usize {
+    const fn byte_idx(&self) -> usize {
         (self.idx as usize - 1) / 8
     }
 
@@ -117,7 +117,7 @@ impl<'s> BitReaderReversed<'s> {
         Ok(value_masked)
     }
 
-    pub fn reset(&mut self, new_source: &'s [u8]) {
+    pub const fn reset(&mut self, new_source: &'s [u8]) {
         self.idx = new_source.len() as isize * 8;
         self.source = new_source;
         self.bit_container = 0;

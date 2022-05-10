@@ -49,11 +49,11 @@ impl Decodebuffer {
         self.hash = XxHash64::with_seed(0);
     }
 
-    pub fn len(&self) -> usize {
+    pub const fn len(&self) -> usize {
         self.buffer.len()
     }
 
-    pub fn is_empty(&self) -> bool {
+    pub const fn is_empty(&self) -> bool {
         self.buffer.is_empty()
     }
 
@@ -136,17 +136,12 @@ impl Decodebuffer {
     }
 
     // Check if and how many bytes can currently be drawn from the buffer
-    pub fn can_drain_to_window_size(&self) -> Option<usize> {
+    pub const fn can_drain_to_window_size(&self) -> Option<usize> {
         if self.buffer.len() > self.window_size {
             Some(self.buffer.len() - self.window_size)
         } else {
             None
         }
-    }
-
-    //How many bytes can be drained if the window_size does not have to be maintained
-    pub fn can_drain(&self) -> usize {
-        self.buffer.len()
     }
 
     //drain as much as possible while retaining enough so that decoding si still possible with the required window_size
@@ -249,7 +244,7 @@ impl Decodebuffer {
             drain_guard.amount += written1;
 
             // Shut clippy up. I liked the explicit if better but oh well...
-            let _: () = res1?;
+            res1?;
 
             // Only if the first call to write_bytes was not a partial write we can continue with slice2
             // Partial writes SHOULD never happen without res1 being an error, but lets just protect against it anyways.
@@ -258,7 +253,7 @@ impl Decodebuffer {
                 self.hash.write(&slice2[..written2]);
                 drain_guard.amount += written2;
                 // Shut clippy up. I liked the explicit if better but oh well...
-                let _: () = res2?;
+                res2?;
             }
         }
 

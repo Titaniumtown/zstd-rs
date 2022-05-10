@@ -30,13 +30,13 @@ pub struct Entry {
 
 const ACC_LOG_OFFSET: u8 = 5;
 
-fn highest_bit_set(x: u32) -> u32 {
+const fn highest_bit_set(x: u32) -> u32 {
     assert!(x > 0);
     u32::BITS - x.leading_zeros()
 }
 
 impl<'t> FSEDecoder<'t> {
-    pub fn new(table: &'t FSETable) -> FSEDecoder<'_> {
+    pub const fn new(table: &'t FSETable) -> FSEDecoder<'_> {
         FSEDecoder { state: 0, table }
     }
 
@@ -260,7 +260,7 @@ impl FSETable {
 }
 
 //utility functions for building the decoding table from probabilities
-fn next_position(mut p: usize, table_size: usize) -> usize {
+const fn next_position(mut p: usize, table_size: usize) -> usize {
     p += (table_size >> 1) + (table_size >> 3) + 3;
     p &= table_size - 1;
     p

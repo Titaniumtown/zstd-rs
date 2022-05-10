@@ -1,4 +1,11 @@
 #![deny(trivial_casts, trivial_numeric_casts, rust_2018_idioms)]
+#![feature(const_slice_from_raw_parts)]
+#![feature(const_mut_refs)]
+#![feature(const_ptr_read)]
+#![feature(const_default_impls)]
+#![feature(const_trait_impl)]
+#![feature(const_num_from_num)]
+
 
 pub mod blocks;
 pub mod decoding;
